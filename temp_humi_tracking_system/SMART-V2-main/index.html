@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Control Panel</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Language Toggle Button -->
+        <button id="langToggle" class="lang-toggle" onclick="toggleLanguage()">
+            <span class="lang-icon">🌐</span>
+            <span class="lang-text">EN</span>
+        </button>
+
+        <h1 data-lang="title">Device Control Panel</h1>
+        
+        <!-- Temperature and Humidity Section -->
+        <div class="sensor-section">
+            <!-- Room 1 -->
+            <div class="sensor-card">
+                <div class="sensor-header">
+                    <h2 data-lang="room1-title">Room 1 - Temperature & Humidity</h2>
+                </div>
+                <div class="sensor-data">
+                    <div class="sensor-item">
+                        <div class="sensor-icon">🌡️</div>
+                        <div class="sensor-value">
+                            <span id="temperature1">--</span>°C
+                        </div>
+                    </div>
+                    <div class="sensor-item">
+                        <div class="sensor-icon">💧</div>
+                        <div class="sensor-value">
+                            <span id="humidity1">--</span>%
+                        </div>
+                    </div>
+                </div>
+                <!-- Room 1 Thresholds -->
+                <div class="threshold-controls">
+                    <div class="threshold-item">
+                        <label data-lang="temp-threshold">Temperature Threshold:</label>
+                        <div class="slider-with-value">
+                            <input type="range" id="tempThreshold1" min="0" max="100" value="30" 
+                                   oninput="document.getElementById('tempThresholdValue1').textContent = this.value + '°C'">
+                            <span class="value-display" id="tempThresholdValue1">30°C</span>
+                        </div>
+                    </div>
+                    <div class="threshold-item">
+                        <label data-lang="humidity-threshold">Humidity Threshold:</label>
+                        <div class="slider-with-value">
+                            <input type="range" id="humidityThreshold1" min="0" max="100" value="80" 
+                                   oninput="document.getElementById('humidityThresholdValue1').textContent = this.value + '%'">
+                            <span class="value-display" id="humidityThresholdValue1">80%</span>
+                        </div>
+                    </div>
+                    <button class="confirm-button" onclick="confirmThresholds('room1')" data-lang="confirm-thresholds">
+                        Confirm Thresholds
+                    </button>
+                </div>
+                <div class="alert-status" id="alertStatus1"></div>
+            </div>
+
+            <!-- Room 2 -->
+            <div class="sensor-card">
+                <div class="sensor-header">
+                    <h2 data-lang="room2-title">Room 2 - Temperature & Humidity</h2>
+                </div>
+                <div class="sensor-data">
+                    <div class="sensor-item">
+                        <div class="sensor-icon">🌡️</div>
+                        <div class="sensor-value">
+                            <span id="temperature2">--</span>°C
+                        </div>
+                    </div>
+                    <div class="sensor-item">
+                        <div class="sensor-icon">💧</div>
+                        <div class="sensor-value">
+                            <span id="humidity2">--</span>%
+                        </div>
+                    </div>
+                </div>
+                <!-- Room 2 Thresholds -->
+                <div class="threshold-controls">
+                    <div class="threshold-item">
+                        <label data-lang="temp-threshold">Temperature Threshold:</label>
+                        <div class="slider-with-value">
+                            <input type="range" id="tempThreshold2" min="0" max="100" value="30" 
+                                   oninput="document.getElementById('tempThresholdValue2').textContent = this.value + '°C'">
+                            <span class="value-display" id="tempThresholdValue2">30°C</span>
+                        </div>
+                    </div>
+                    <div class="threshold-item">
+                        <label data-lang="humidity-threshold">Humidity Threshold:</label>
+                        <div class="slider-with-value">
+                            <input type="range" id="humidityThreshold2" min="0" max="100" value="80" 
+                                   oninput="document.getElementById('humidityThresholdValue2').textContent = this.value + '%'">
+                            <span class="value-display" id="humidityThresholdValue2">80%</span>
+                        </div>
+                    </div>
+                    <button class="confirm-button" onclick="confirmThresholds('room2')" data-lang="confirm-thresholds">
+                        Confirm Thresholds
+                    </button>
+                </div>
+                <div class="alert-status" id="alertStatus2"></div>
+            </div>
+        </div>
+
+        <!-- Control Buttons Section -->
+        <div class="control-section">
+            <div class="control-group">
+                <h2 data-lang="room-controls">Room Controls</h2>
+                <div class="control-buttons">
+                    <button id="room1Light" class="control-button" onclick="toggleRoomLight('room1')">
+                        <span class="button-icon">💡</span>
+                        <span class="button-text" data-lang="room1-light">Room 1 Light</span>
+                        <span class="button-status">OFF</span>
+                    </button>
+                    <button id="room2Light" class="control-button" onclick="toggleRoomLight('room2')">
+                        <span class="button-icon">💡</span>
+                        <span class="button-text" data-lang="room2-light">Room 2 Light</span>
+                        <span class="button-status">OFF</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h2 data-lang="alert-settings">Alert Settings</h2>
+                <div class="control-buttons">
+                    <button id="room1Alert" class="control-button" onclick="toggleRoomAlert('room1')">
+                        <span class="button-icon">🔔</span>
+                        <span class="button-text" data-lang="room1-alert">Room 1 Alert</span>
+                        <span class="button-status">OFF</span>
+                    </button>
+                    <button id="room2Alert" class="control-button" onclick="toggleRoomAlert('room2')">
+                        <span class="button-icon">🔔</span>
+                        <span class="button-text" data-lang="room2-alert">Room 2 Alert</span>
+                        <span class="button-status">OFF</span>
+                    </button>
+                    <button id="emailAlert" class="control-button" onclick="toggleEmailAlert()">
+                        <span class="button-icon">📧</span>
+                        <span class="button-text" data-lang="email-alert">Email Alert</span>
+                        <span class="button-status">OFF</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+            <p>&copy; Copyright 2025 DIEM TRANG & BINH AN </p>
+            <p>&nbsp;&nbsp;</p>
+        </footer>
+        <!-- Devices Section -->
+        <div class="device-list" id="deviceList">
+            <!-- Devices will be loaded from Firebase -->
+        </div>
+    </div>
+    
+    <!-- Footer -->
+   
+
+    <script src="App.js" defer></script>
+    <div id="toast" class="toast"></div>
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title" data-lang="warning-title">Warning!</div>
+            <div class="modal-message" id="modalMessage"></div>
+            <div class="modal-buttons">
+                <button class="modal-button cancel" data-lang="cancel-button" onclick="cancelThresholdChange()">Cancel</button>
+                <button class="modal-button confirm" data-lang="confirm-button" onclick="confirmThresholdChange()">Confirm</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
